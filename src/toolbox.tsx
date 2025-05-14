@@ -1,5 +1,5 @@
 import { styled } from "restyle"
-import * as theme from "./dark"
+import * as theme from "./assets/dark"
 import type { ElementData } from "./types"
 
 function generateId(length = 4): string {

@@ -1,12 +1,12 @@
-import * as theme from "./dark"
+import * as theme from "./assets/dark"
 import type { ElementData } from "./types"
 
-type Props = {
+interface ElementsPanelProps {
   elements: ElementData[]
   onUpdate: (id: string, newData: Partial<ElementData>) => void
 }
 
-export default function ElementsPanel({ elements, onUpdate }: Props) {
+export default function ElementsPanel({ elements, onUpdate }: ElementsPanelProps) {
   return (
     <div style={{ width: "250px", borderRight: "1px solid #ccc", padding: "1rem" }}>
       <h3>Elements</h3>
