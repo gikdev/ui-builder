@@ -1,14 +1,13 @@
-import { useState } from "react"
+import { SlidersHorizontal, Toolbox as ToolboxIcon } from "@phosphor-icons/react"
+import { useAtom } from "jotai"
 import { PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import { styled } from "restyle"
-import type { UIElement } from "#/types"
+import IconPanel, { type IconItem } from "#/components/icon-panel"
+import { type Panel, activePanelAtom, elementsAtom } from "#/shared/atoms"
 import Canvas from "./canvas"
 import ElementsPanel from "./elements-panel"
+import Properties from "./properties"
 import Toolbox from "./toolbox"
-import IconPanel, { type IconItem } from "#/components/icon-panel"
-import { DiamondsFour, Toolbox as ToolboxIcon } from "@phosphor-icons/react"
-import { useAtom } from "jotai"
-import { activePanelAtom, type Panel } from "#/shared/atoms"
 
 const panels: IconItem[] = [
   {
@@ -17,39 +16,29 @@ const panels: IconItem[] = [
     Icon: ToolboxIcon,
   },
   {
-    id: "elements",
-    name: "Elements",
-    Icon: DiamondsFour,
+    id: "properties",
+    name: "Properties",
+    Icon: SlidersHorizontal,
   },
 ]
 
 export default function App() {
-  const [elements, setElements] = useState<UIElement[]>([])
+  const [elements] = useAtom(elementsAtom)
   const [activePanel, setActivePanel] = useAtom(activePanelAtom)
-
-  const handleAddElement = (element: UIElement) => {
-    setElements(prev => [...prev, element])
-  }
-
-  const updateElement = (id: string, changes: Partial<UIElement>) => {
-    setElements(prev => {
-      return prev.map(el => {
-        const isTheSameElement = el.id === id
-        if (!isTheSameElement) return el
-        return { ...el, id, ...changes } as UIElement
-      })
-    })
-  }
 
   return (
     <Container direction="horizontal">
-      <ElementsPanel elements={elements} onUpdate={updateElement} />
+      <ElementsPanel />
       <PanelResizeHandle />
       <Canvas elements={elements} />
       <PanelResizeHandle />
-      {activePanel === "toolbox" && <Toolbox onAdd={handleAddElement} />}
-      {activePanel === "properties" && <Toolbox onAdd={handleAddElement} />}
-      <IconPanel onSelect={id => setActivePanel(id as Panel)} activePanelId={activePanel} items={panels} />
+      {activePanel === "toolbox" && <Toolbox />}
+      {activePanel === "properties" && <Properties />}
+      <IconPanel
+        onSelect={id => setActivePanel(id as Panel)}
+        activePanelId={activePanel}
+        items={panels}
+      />
     </Container>
   )
 }

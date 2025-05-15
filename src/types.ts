@@ -22,18 +22,21 @@ export interface UIElementRaw {
 }
 
 export class UIElement {
-  private _id: string
+  public readonly id: string
   public tag: string
   public name = ""
   public children: Array<string | ElementData> | null
+  public attrs: Record<string, string> = {}
 
   constructor({ children = null, tag }: UIElementRaw) {
-    this._id = generateId()
+    this.id = generateId()
     this.tag = tag
     this.children = children
   }
 
-  get id() {
-    return this._id
+  static clone(el: UIElement) {
+    const newEl: UIElement = structuredClone(el)
+
+    return newEl
   }
 }

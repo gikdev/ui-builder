@@ -1,23 +1,26 @@
 import { DiamondsFour } from "@phosphor-icons/react"
+import { useSetAtom } from "jotai"
 import { Panel } from "react-resizable-panels"
 import { styled } from "restyle"
 import Accordion from "#/components/accordion"
 import htmlData from "#/lib/html-data/data"
 import htmlTagsCategorized from "#/lib/html-tags-categorized"
+import { elementsAtom } from "#/shared/atoms"
 import * as rdxClrs from "#/styles/dark"
 import { UIElement } from "#/types"
 
 const getHtmlTagData = (tag: string) => htmlData.tags.find(t => t.name === tag)
 
-interface ToolboxProps {
-  onAdd: (el: UIElement) => void
-}
+export default function Toolbox() {
+  const setElements = useSetAtom(elementsAtom)
 
-export default function Toolbox({ onAdd }: ToolboxProps) {
+  const onAdd = (newEl: UIElement) => {
+    setElements(e => [...e, newEl])
+  }
+
   return (
     <Container minSize={20} defaultSize={30}>
       <Title>Toolbox</Title>
-      <Description>Select an element to add to canvas:</Description>
 
       <ScrollArea>
         {Object.keys(htmlTagsCategorized).map(categ => (
@@ -67,13 +70,6 @@ const Title = styled("h2", {
   paddingLeft: "2rem",
   fontSize: "2rem",
   marginBottom: "0.5rem",
-})
-
-const Description = styled("p", {
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
-  fontSize: "1.2rem",
-  marginBottom: "2rem",
 })
 
 const ScrollArea = styled("div", {

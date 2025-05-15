@@ -34,7 +34,7 @@ export interface HtmlTag {
 /** Describes content with a kind (e.g. markdown).  */
 export interface HtmlDescription {
   /** Kind of description content */
-  kind: "markdown" | "text"
+  kind: string
 
   /** The actual content */
   value: string
@@ -70,7 +70,7 @@ export interface HtmlReference {
 /** Indicates baseline support status across browsers.  */
 export interface HtmlStatus {
   /** Whether the feature is baseline (boolean or "high"/"low") */
-  baseline?: boolean | "high" | "low"
+  baseline?: boolean | "high" | "low" | string
 
   /** Date when low-level baseline was established */
   baseline_low_date?: string

@@ -1,7 +1,7 @@
-import type { Panel } from "#/shared/atoms"
-import * as rdxClrs from "#/styles/dark"
 import type { Icon } from "@phosphor-icons/react"
 import { styled } from "restyle"
+import type { Panel } from "#/shared/atoms"
+import * as rdxClrs from "#/styles/dark"
 
 export interface IconItem {
   id: Panel
@@ -53,7 +53,7 @@ function IconItem({ isActive, item, onSelect }: IconItemProps) {
         type="button"
         onClick={() => onSelect(isActive ? "" : item.id)}
       >
-        <item.Icon size={24} />
+        <item.Icon size={24} weight={isActive ? "fill" : "regular"} />
       </Btn>
     </abbr>
   )

@@ -1,41 +1,41 @@
-import { useEffect, useRef } from "react"
+import { Trash } from "@phosphor-icons/react"
+import { useAtom } from "jotai"
+import { useKeyPress } from "react-haiku"
 import { Panel } from "react-resizable-panels"
 import { styled } from "restyle"
-import Accordion from "#/components/accordion"
+import { elementsAtom, selectedElementAtom } from "#/shared/atoms"
 import * as rdxClrs from "#/styles/dark"
-import type { UIElement } from "#/types"
 
-interface ElementsPanelProps {
-  elements: UIElement[]
-  onUpdate: (id: string, newData: Partial<UIElement>) => void
-}
+export default function ElementsPanel() {
+  const [selectedElement, setSelectedElement] = useAtom(selectedElementAtom)
+  const [elements, setElements] = useAtom(elementsAtom)
 
-export default function ElementsPanel({ elements, onUpdate }: ElementsPanelProps) {
+  function removeSelectedElement() {
+    if (!selectedElement) return
+    setElements(c => c.filter(e => e.id !== selectedElement))
+  }
+
+  useKeyPress(["delete"], removeSelectedElement)
+
   return (
     <Container minSize={20} defaultSize={30}>
-      <Title>Elements</Title>
-      <Description>Select an element to edit properties or sort it:</Description>
+      <Nav>
+        <Title>Elements</Title>
+        <IconBtn type="button" onClick={removeSelectedElement}>
+          <Trash size={16} />
+        </IconBtn>
+      </Nav>
 
       <ElementsContainer>
         {elements.map(el => (
-          <Accordion
-            summary={el.name ? `${el.name} <${el.tag}#${el.id}>` : `${el.tag}#${el.id}`}
+          <ElementItem
+            type="button"
+            onClick={() => setSelectedElement(selectedElement === el.id ? "" : el.id)}
+            className={selectedElement === el.id ? "active" : undefined}
             key={el.id}
           >
-            <StringField label="ID" value={el.id} onChange={v => onUpdate(el.id, { id: v })} />
-            <StringField
-              label="Name"
-              value={el.name || ""}
-              onChange={v => onUpdate(el.id, { name: v })}
-            />
-            <StringField label="Tag" value={el.tag} readOnly />
-            <StringField
-              label="Text"
-              value={el.children?.[0]?.toString() || ""}
-              onChange={v => onUpdate(el.id, { children: [v] })}
-              multiline
-            />
-          </Accordion>
+            {el.name ? `${el.name} <${el.tag}#${el.id}>` : `${el.tag}#${el.id}`}
+          </ElementItem>
         ))}
       </ElementsContainer>
     </Container>
@@ -48,129 +48,87 @@ const Container = styled(Panel, {
   paddingBottom: "2rem",
   borderRadius: "1rem",
   overflow: "scroll",
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+  overflowY: "scroll",
   width: "50rem",
+  maxHeight: "100dvh",
+  height: "auto",
+  minHeight: "50dvh",
 })
 
-const Title = styled("h2", {
+const Nav = styled("div", {
   paddingRight: "2rem",
   paddingLeft: "2rem",
-  fontSize: "2rem",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+})
+
+const Title = styled("p", {
+  fontSize: "1.5rem",
   marginBottom: "0.5rem",
+  fontWeight: "bold",
+  marginInlineEnd: "auto",
 })
 
-const Description = styled("p", {
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
-  fontSize: "1.2rem",
-  marginBottom: "2rem",
+const IconBtn = styled("button", {
+  border: "none",
+  color: rdxClrs.slate[11],
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  cursor: "pointer",
+  transition: "all 200ms",
+  backgroundColor: "transparent",
+  padding: 0,
+  width: "2.5rem",
+  height: "2.5rem",
+
+  "&:hover": {
+    backgroundColor: rdxClrs.slate["03"],
+    color: rdxClrs.slate[12],
+  },
 })
 
 const ElementsContainer = styled("div", {
   display: "flex",
   flexDirection: "column",
+  overflowY: "auto",
+  flex: 1,
+  minHeight: 0,
 })
 
-//////////////////////////////////////
-
-interface StringFieldProps {
-  label: string
-  value: string
-  onChange?: (v: string) => void
-  readOnly?: boolean
-  multiline?: boolean
-}
-
-function StringField({
-  label,
-  value,
-  onChange,
-  multiline = false,
-  readOnly = false,
-}: StringFieldProps) {
-  const inputRef = useRef<HTMLTextAreaElement & HTMLInputElement>(null)
-  const TagToRenderForInput = multiline ? FieldTextArea : FieldInput
-
-  useEffect(() => {
-    if (!inputRef.current) return
-    inputRef.current.value = value
-  }, [value])
-
-  return (
-    <Field>
-      <FieldLabel>{label}:</FieldLabel>
-      <TagToRenderForInput
-        ref={inputRef}
-        readOnly={readOnly}
-        onFocus={e => {
-          if (!readOnly) return
-          e.target.blur()
-        }}
-        onBlur={() => onChange?.(inputRef.current?.value || "")}
-        css={{
-          cursor: readOnly ? "not-allowed" : "text",
-        }}
-      />
-    </Field>
-  )
-}
-
-const Field = styled("label", {
+const ElementItem = styled("button", {
+  border: "none",
+  color: rdxClrs.slate[11],
   display: "flex",
-  flexDirection: "column",
-  gap: "0.2rem",
+  cursor: "pointer",
+  gap: "0.5rem",
+  alignItems: "center",
   fontSize: "1.2rem",
-  padding: "0.5rem 1rem 0.5rem 4rem",
-})
-
-const FieldLabel = styled("span", {
-  fontSize: "1.0rem",
-})
-
-const FieldInput = styled("input", {
-  backgroundColor: rdxClrs.slate["03"],
-  color: rdxClrs.slate["11"],
-  borderWidth: 0,
-  borderBottomWidth: "1px",
-  borderRadius: "0.2rem",
-  borderStyle: "solid",
-  borderColor: rdxClrs.slate["07"],
+  padding: "0.3rem 2rem",
   transition: "all 200ms",
-  flexGrow: 1,
-  flexShrink: 1,
-  width: "100%",
+  backgroundColor: "transparent",
 
-  ":hover": {
-    backgroundColor: rdxClrs.slate["04"],
-    color: rdxClrs.slate["12"],
+  "&:hover": {
+    backgroundColor: rdxClrs.slate["03"],
+    color: rdxClrs.slate[12],
   },
 
-  ":focus": {
-    borderColor: rdxClrs.blue["08"],
-    outline: "none",
-  },
-})
+  "&.active": {
+    backgroundColor: rdxClrs.blue["09"],
+    color: rdxClrs.slate[12],
 
-const FieldTextArea = styled("textarea", {
-  backgroundColor: rdxClrs.slate["03"],
-  color: rdxClrs.slate["11"],
-  borderWidth: 0,
-  borderBottomWidth: "1px",
-  borderRadius: "0.2rem",
-  borderStyle: "solid",
-  borderColor: rdxClrs.slate["07"],
-  transition: "all 200ms",
-  flexGrow: 1,
-  flexShrink: 1,
-  width: "100%",
-  resize: "vertical",
-
-  ":hover": {
-    backgroundColor: rdxClrs.slate["04"],
-    color: rdxClrs.slate["12"],
+    "&:hover": {
+      backgroundColor: rdxClrs.blue["10"],
+      color: rdxClrs.slate[12],
+    },
   },
 
-  ":focus": {
-    borderColor: rdxClrs.blue["08"],
-    outline: "none",
+  span: {
+    display: "inline-block",
+    width: "100%",
   },
 })

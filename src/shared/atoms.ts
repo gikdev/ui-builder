@@ -1,4 +1,5 @@
 import { atomWithStorage } from "jotai/utils"
+import type { UIElement } from "#/types"
 
 ///// Panels
 
@@ -11,6 +12,9 @@ export const Panels = {
 
 export type Panel = (typeof Panels)[keyof typeof Panels]
 
-export const activePanelAtom = atomWithStorage<Panel>("darkMode", "")
+export const activePanelAtom = atomWithStorage<Panel>("activePanel", "")
 
-///// ...
+///// Elements
+
+export const elementsAtom = atomWithStorage<UIElement[]>("elements", [])
+export const selectedElementAtom = atomWithStorage<UIElement["id"]>("selectedElement", "")
