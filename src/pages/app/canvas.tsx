@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react"
-import type { ElementData } from "./types"
+import { Panel } from "react-resizable-panels"
+import { styled } from "restyle"
+import type { UIElement } from "#/types"
 
 interface CanvasProps {
-  elements: ElementData[]
+  elements: UIElement[]
 }
 
 export default function Canvas({ elements }: CanvasProps) {
@@ -16,9 +18,13 @@ export default function Canvas({ elements }: CanvasProps) {
     if (!doc) return
 
     doc.open()
-    doc.writeln(
-      "<!DOCTYPE html><html><head><style>body { margin: 0; font-family: sans-serif; }</style></head><body></body></html>",
-    )
+    doc.writeln(`
+      <!DOCTYPE html>
+      <html>
+        <head></head>
+        <body></body>
+      </html>
+    `)
     doc.close()
 
     const body = doc.body
@@ -26,21 +32,24 @@ export default function Canvas({ elements }: CanvasProps) {
 
     for (const el of elements) {
       const domEl = doc.createElement(el.tag)
-      domEl.textContent = el.text
+      domEl.textContent = el.children?.join(" ") || ""
       domEl.setAttribute("data-id", el.id)
       body.appendChild(domEl)
     }
   }, [elements])
 
   return (
-    <iframe
-      ref={iframeRef}
-      style={{
-        width: "100%",
-        height: "400px",
-        border: "1px solid #ccc",
-        background: "white",
-      }}
-    />
+    <Panel defaultSize={60} minSize={40} maxSize={80}>
+      <IFrame ref={iframeRef} />
+    </Panel>
   )
 }
+
+const IFrame = styled("iframe", {
+  width: "100%",
+  height: "40rem",
+  resize: "vertical",
+  border: "none",
+  background: "white",
+  borderRadius: "1rem",
+})

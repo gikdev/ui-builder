@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap");
+@import "./reset.css";
+@import "./radix-colors.css";
+
+/* * { outline: 1px dashed red; } */
+
+html,
+body,
+#root {
+  font-family: "JetBrains Mono", monospace;
+  min-height: 100dvh;
+  background: var(--rdx-clr-slate-01);
+  color: var(--rdx-clr-slate-11);
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.5rem;
+}

@@ -1,3 +1,5 @@
+/* By https://joshwcomeau.com */
+
 /* 1. Use a more-intuitive box-sizing model */
 *,
 *::before,
@@ -73,39 +75,4 @@ h6 {
 #root,
 #__next {
   isolation: isolate;
-}
-
-/* -------------------------- */
-/* -------------------------- */
-/* -------------------------- */
-
-html,
-body,
-#root,
-.container-main {
-  font-family: "JetBrains Mono", monospace;
-  min-height: 100dvh;
-  background: #111113;
-  color: #b0b4ba;
-}
-
-html {
-  font-size: 62.5%;
-}
-body {
-  font-size: 1.5rem;
-}
-
-.container-main {
-  display: flex;
-}
-
-.canvas {
-  padding: 1rem;
-}
-
-.canvas * {
-  all: unset;
-  display: revert;
-  font-family: sans-serif;
 }
