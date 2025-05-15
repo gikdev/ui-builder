@@ -5,9 +5,27 @@ import type { UIElement } from "#/types"
 import Canvas from "./canvas"
 import ElementsPanel from "./elements-panel"
 import Toolbox from "./toolbox"
+import IconPanel, { type IconItem } from "#/components/icon-panel"
+import { DiamondsFour, Toolbox as ToolboxIcon } from "@phosphor-icons/react"
+import { useAtom } from "jotai"
+import { activePanelAtom, type Panel } from "#/shared/atoms"
+
+const panels: IconItem[] = [
+  {
+    id: "toolbox",
+    name: "Toolbox",
+    Icon: ToolboxIcon,
+  },
+  {
+    id: "elements",
+    name: "Elements",
+    Icon: DiamondsFour,
+  },
+]
 
 export default function App() {
   const [elements, setElements] = useState<UIElement[]>([])
+  const [activePanel, setActivePanel] = useAtom(activePanelAtom)
 
   const handleAddElement = (element: UIElement) => {
     setElements(prev => [...prev, element])
@@ -29,7 +47,9 @@ export default function App() {
       <PanelResizeHandle />
       <Canvas elements={elements} />
       <PanelResizeHandle />
-      <Toolbox onAdd={handleAddElement} />
+      {activePanel === "toolbox" && <Toolbox onAdd={handleAddElement} />}
+      {activePanel === "properties" && <Toolbox onAdd={handleAddElement} />}
+      <IconPanel onSelect={id => setActivePanel(id as Panel)} activePanelId={activePanel} items={panels} />
     </Container>
   )
 }
